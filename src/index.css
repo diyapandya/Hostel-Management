@@ -1,0 +1,295 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AutoStay System Design System - Human-centered design */
+
+@layer base {
+  :root {
+    /* Warm, welcoming color palette */
+    --background: 355 25% 97%;
+    --foreground: 220 13% 18%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 18%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 18%;
+
+    /* Friendly blue as primary */
+    --primary: 210 100% 56%;
+    --primary-foreground: 0 0% 100%;
+    --primary-soft: 210 100% 96%;
+
+    /* Warm secondary colors */
+    --secondary: 25 50% 94%;
+    --secondary-foreground: 220 13% 18%;
+
+    --muted: 210 20% 96%;
+    --muted-foreground: 220 13% 50%;
+
+    /* Soft accent color */
+    --accent: 25 85% 85%;
+    --accent-foreground: 220 13% 18%;
+
+    /* Gentle destructive color */
+    --destructive: 0 65% 58%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 20% 90%;
+    --input: 210 20% 95%;
+    --ring: 210 100% 56%;
+
+    --radius: 0.75rem;
+
+    /* Gradients for depth and warmth */
+    --gradient-primary: linear-gradient(135deg, hsl(210 100% 56%), hsl(195 85% 60%));
+    --gradient-warm: linear-gradient(135deg, hsl(25 85% 85%), hsl(45 90% 88%));
+    --gradient-hero: linear-gradient(135deg, hsl(210 100% 96%), hsl(195 85% 94%));
+
+    /* Shadows for depth */
+    --shadow-soft: 0 2px 10px -3px hsl(210 100% 56% / 0.1);
+    --shadow-medium: 0 8px 30px -12px hsl(210 100% 56% / 0.25);
+    --shadow-large: 0 20px 50px -20px hsl(210 100% 56% / 0.3);
+
+    /* Typography scale */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+    --font-size-4xl: 2.25rem;
+
+    /* Spacing scale */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 0.75rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  /* Hero Section Styles */
+  .hero-section {
+    @apply relative min-h-screen flex items-center px-4 sm:px-6 lg:px-8;
+    background: var(--gradient-hero);
+  }
+
+  .hero-content {
+    @apply max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center;
+  }
+
+  .hero-text {
+    @apply space-y-6;
+  }
+
+  .hero-title {
+    @apply text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight;
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-subtitle {
+    @apply text-lg sm:text-xl text-muted-foreground leading-relaxed;
+  }
+
+  .hero-buttons {
+    @apply flex flex-col sm:flex-row gap-4;
+  }
+
+  /* Feature Section Styles */
+  .features-section {
+    @apply py-20 px-4 sm:px-6 lg:px-8;
+  }
+
+  .features-container {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .features-header {
+    @apply text-center mb-16;
+  }
+
+  .features-title {
+    @apply text-3xl sm:text-4xl font-bold mb-4;
+  }
+
+  .features-description {
+    @apply text-lg text-muted-foreground max-w-3xl mx-auto;
+  }
+
+  .features-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+  }
+
+  .feature-card {
+    @apply bg-card rounded-2xl p-8 shadow-sm border border-border/50 hover:shadow-md transition-all duration-300;
+  }
+
+  .feature-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center mb-6;
+    background: var(--gradient-warm);
+  }
+
+  .feature-title {
+    @apply text-xl font-semibold mb-3;
+  }
+
+  .feature-description {
+    @apply text-muted-foreground leading-relaxed;
+  }
+
+  /* How It Works Section */
+  .how-it-works-section {
+    @apply py-20 px-4 sm:px-6 lg:px-8;
+    background: hsl(var(--primary-soft) / 0.3);
+  }
+
+  .how-it-works-container {
+    @apply max-w-6xl mx-auto;
+  }
+
+  .steps-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
+  }
+
+  .step-card {
+    @apply text-center;
+  }
+
+  .step-number {
+    @apply w-16 h-16 rounded-full flex items-center justify-center text-2xl font-bold text-primary-foreground mx-auto mb-4;
+    background: var(--gradient-primary);
+  }
+
+  .step-title {
+    @apply text-lg font-semibold mb-2;
+  }
+
+  .step-description {
+    @apply text-muted-foreground text-sm;
+  }
+
+  /* Contact Section */
+  .contact-section {
+    @apply py-20 px-4 sm:px-6 lg:px-8;
+  }
+
+  .contact-container {
+    @apply max-w-4xl mx-auto text-center;
+  }
+
+  /* Button Variants */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium rounded-xl text-primary-foreground transition-all duration-300;
+    background: var(--gradient-primary);
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-medium rounded-xl bg-white text-foreground border border-border transition-all duration-300;
+    box-shadow: var(--shadow-soft);
+  }
+
+  .btn-secondary:hover {
+    @apply bg-secondary;
+    transform: translateY(-2px);
+  }
+
+  /* Navigation */
+  .navbar {
+    @apply fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border/50;
+  }
+
+  .navbar-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .navbar-content {
+    @apply flex items-center justify-between h-16;
+  }
+
+  .navbar-links {
+    @apply hidden md:flex items-center space-x-8;
+  }
+
+  .navbar-link {
+    @apply text-sm font-medium text-foreground hover:text-primary transition-colors duration-300;
+  }
+
+  /* Utility Classes */
+  .gradient-text {
+    background: var(--gradient-primary);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .glass-effect {
+    @apply bg-white/10 backdrop-blur-md border border-white/20;
+  }
+}
