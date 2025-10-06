@@ -1,8 +1,11 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Clock, Shield, Smartphone } from 'lucide-react';
 import heroImage from '@/assets/hero-illustration.jpg';
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+
   return (
     <section id="about" className="hero-section">
       <div className="hero-content">
@@ -18,11 +21,11 @@ const HeroSection = () => {
           </p>
           
           <div className="hero-buttons">
-            <button className="btn-primary">
+            <button className="btn-primary" onClick={() => navigate('/register')}>
               Get Started
               <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="btn-secondary">
+            <button className="btn-secondary" onClick={() => navigate('/login')}>
               Login Now
             </button>
           </div>
