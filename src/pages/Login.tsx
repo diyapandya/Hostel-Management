@@ -46,34 +46,24 @@ const Login = () => {
 
     try {
       const validatedData = loginSchema.parse(formData);
-      
+
       // Simulate login validation with localStorage
       const storedUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
       const user = storedUsers.find(
         (u: any) => u.email === validatedData.email && u.role === validatedData.role
       );
 
-      if (!user) {
+      if (!user || user.password !== validatedData.password) {
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: "User not found. Please register first.",
+          description: "Invalid email or password. Please try again.",
         });
         setIsLoading(false);
         return;
       }
 
-      if (user.password !== validatedData.password) {
-        toast({
-          variant: "destructive",
-          title: "Login Failed",
-          description: "Incorrect password. Please try again.",
-        });
-        setIsLoading(false);
-        return;
-      }
-
-      // Store current user session
+      // Save login status
       localStorage.setItem('currentUser', JSON.stringify(user));
 
       toast({
@@ -81,20 +71,13 @@ const Login = () => {
         description: `Welcome back, ${user.name || user.email}!`,
       });
 
-      // Redirect based on role
-      setTimeout(() => {
-        switch (validatedData.role) {
-          case 'student':
-            navigate('/student-dashboard');
-            break;
-          case 'warden':
-            navigate('/warden-dashboard');
-            break;
-          case 'admin':
-            navigate('/admin-dashboard');
-            break;
-        }
-      }, 500);
+    if (validatedData.role === "student") {
+  navigate("/student-dashboard"); // redirect to student dashboard
+} else if (validatedData.role === "warden") {
+  navigate("/warden-dashboard"); // warden dashboard page
+} else if (validatedData.role === "admin") {
+  navigate("/admin-dashboard"); // admin dashboard page
+}
 
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -106,6 +89,8 @@ const Login = () => {
         });
         setErrors(fieldErrors);
       }
+      setIsLoading(false);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -205,7 +190,7 @@ const Login = () => {
           </div>
 
           <div className="mt-4 text-center">
-            <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link to="./Index.tsx" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               ← Back to Home
             </Link>
           </div>

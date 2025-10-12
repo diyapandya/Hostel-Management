@@ -1,109 +1,133 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { LogOut, Home, User, BookOpen, Utensils } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { UtensilsCrossed, Wrench, Bell, CheckCircle } from "lucide-react";
 
-const StudentDashboard = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) {
-      navigate('/login');
-      return;
-    }
-    
-    const userData = JSON.parse(currentUser);
-    if (userData.role !== 'student') {
-      navigate('/login');
-      return;
-    }
-    
-    setUser(userData);
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('currentUser');
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
-    navigate('/login');
-  };
-
-  if (!user) return null;
-
-  const features = [
-    { icon: Utensils, title: 'Meal Booking', description: 'Book your daily meals', color: 'from-blue-500 to-cyan-500' },
-    { icon: Home, title: 'Room Service', description: 'Request maintenance', color: 'from-purple-500 to-pink-500' },
-    { icon: BookOpen, title: 'Study Rooms', description: 'Reserve study spaces', color: 'from-orange-500 to-red-500' },
+export default function Dashboard() {
+  const stats = [
+    {
+      title: "Meals Booked",
+      value: "12",
+      subtitle: "This week",
+      icon: UtensilsCrossed,
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+    },
+    {
+      title: "Maintenance Requests",
+      value: "2",
+      subtitle: "In progress",
+      icon: Wrench,
+      color: "text-accent",
+      bgColor: "bg-accent/10",
+    },
+    {
+      title: "Unread Notices",
+      value: "3",
+      subtitle: "New updates",
+      icon: Bell,
+      color: "text-warning",
+      bgColor: "bg-warning/10",
+    },
+    {
+      title: "Completed Tasks",
+      value: "8",
+      subtitle: "This month",
+      icon: CheckCircle,
+      color: "text-success",
+      bgColor: "bg-success/10",
+    },
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-hero)' }}>
-      {/* Header */}
-      <nav className="navbar">
-        <div className="navbar-container">
-          <div className="navbar-content">
-            <h1 className="text-xl font-bold gradient-text">AutoStay System</h1>
-            <Button variant="outline" onClick={handleLogout} size="sm">
-              <LogOut className="w-4 h-4" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </nav>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+        <p className="text-muted-foreground">Welcome to your hostel management system</p>
+      </div>
 
-      {/* Main Content */}
-      <div className="pt-24 px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="max-w-6xl mx-auto">
-          {/* Welcome Section */}
-          <div className="bg-card rounded-2xl p-8 shadow-lg border border-border/50 mb-8">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                <User className="w-8 h-8 text-white" />
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <Card key={stat.title} className="hover:shadow-md transition-shadow">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+              <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                <stat.icon className={`h-5 w-5 ${stat.color}`} />
               </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-3xl font-bold">{stat.value}</div>
+              <p className="text-xs text-muted-foreground mt-1">{stat.subtitle}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid gap-4 md:grid-cols-2">
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle>Today's Meals</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
               <div>
-                <h2 className="text-2xl font-bold">Welcome, {user.name}!</h2>
-                <p className="text-muted-foreground">Room No: {user.roomNo}</p>
+                <p className="font-medium">Breakfast</p>
+                <p className="text-sm text-muted-foreground">Idli, Sambar, Chutney</p>
+              </div>
+              <span className="text-xs text-success font-medium">Booked</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+              <div>
+                <p className="font-medium">Lunch</p>
+                <p className="text-sm text-muted-foreground">Rice, Dal, Vegetables, Roti</p>
+              </div>
+              <span className="text-xs text-success font-medium">Booked</span>
+            </div>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+              <div>
+                <p className="font-medium">Dinner</p>
+                <p className="text-sm text-muted-foreground">Chapati, Paneer Curry, Rice</p>
+              </div>
+              <span className="text-xs text-muted-foreground font-medium">Not Booked</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="hover:shadow-md transition-shadow">
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-full bg-success/10">
+                <CheckCircle className="h-4 w-4 text-success" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Plumbing request completed</p>
+                <p className="text-xs text-muted-foreground">2 hours ago</p>
               </div>
             </div>
-            <p className="text-muted-foreground">
-              Access all your hostel services from one convenient dashboard.
-            </p>
-          </div>
-
-          {/* Features Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <div
-                  key={index}
-                  className="bg-card rounded-2xl p-6 shadow-lg border border-border/50 hover:shadow-xl transition-all duration-300 cursor-pointer"
-                >
-                  <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4`}>
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Recent Activity */}
-          <div className="mt-8 bg-card rounded-2xl p-8 shadow-lg border border-border/50">
-            <h3 className="text-xl font-semibold mb-4">Recent Activity</h3>
-            <p className="text-muted-foreground">No recent activity. Start using the features above!</p>
-          </div>
-        </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-full bg-primary/10">
+                <Bell className="h-4 w-4 text-primary" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">New notice: Hostel meeting</p>
+                <p className="text-xs text-muted-foreground">5 hours ago</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
+              <div className="p-2 rounded-full bg-success/10">
+                <UtensilsCrossed className="h-4 w-4 text-success" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">Meals booked for tomorrow</p>
+                <p className="text-xs text-muted-foreground">1 day ago</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
-};
-
-export default StudentDashboard;
+}

@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Menu, X, Home } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // <-- Add this import
+
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const navLinks = [
     { href: '#about', label: 'About' },
@@ -38,10 +41,16 @@ const Navigation = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center gap-4">
-            <button className="btn-secondary">
+            <button
+              className="btn-primary"
+              onClick={() => navigate('/login')}
+            >
               Login
             </button>
-            <button className="btn-primary">
+            <button
+              className="btn-primary"
+              onClick={() => navigate('/register')}
+            >
               Register
             </button>
           </div>
@@ -71,8 +80,24 @@ const Navigation = () => {
                 </a>
               ))}
               <div className="flex flex-col gap-2 pt-4">
-                <button className="btn-secondary">Login</button>
-                <button className="btn-primary">Register</button>
+                <button
+                  className="btn-primary"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate('/login');
+                  }}
+                >
+                  Login
+                </button>
+                <button
+                  className="btn-primary"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    navigate('/register');
+                  }}
+                >
+                  Register
+                </button>
               </div>
             </div>
           </div>

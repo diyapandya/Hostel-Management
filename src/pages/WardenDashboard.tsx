@@ -1,111 +1,189 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { LogOut, Shield, Users, AlertCircle, CheckCircle } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
+import { Users, Building2, DollarSign, Wrench, TrendingUp } from "lucide-react";
+import StatCard from "@/components/Dashboard/StatCard";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-const WardenDashboard = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [user, setUser] = useState<any>(null);
-
-  useEffect(() => {
-    const currentUser = localStorage.getItem('currentUser');
-    if (!currentUser) {
-      navigate('/login');
-      return;
-    }
-    
-    const userData = JSON.parse(currentUser);
-    if (userData.role !== 'warden') {
-      navigate('/login');
-      return;
-    }
-    
-    setUser(userData);
-  }, [navigate]);
-
-  const handleLogout = () => {
-    localStorage.removeItem('currentUser');
-    toast({
-      title: "Logged Out",
-      description: "You have been successfully logged out.",
-    });
-    navigate('/login');
-  };
-
-  if (!user) return null;
-
+export default function Dashboard() {
   const stats = [
-    { icon: Users, label: 'Total Students', value: '248', color: 'from-blue-500 to-cyan-500' },
-    { icon: AlertCircle, label: 'Pending Requests', value: '12', color: 'from-orange-500 to-red-500' },
-    { icon: CheckCircle, label: 'Completed Today', value: '34', color: 'from-green-500 to-emerald-500' },
+    {
+      title: "Total Students",
+      value: "1,248",
+      icon: Users,
+      trend: { value: "12% from last month", positive: true },
+    },
+    {
+      title: "Total Wardens",
+      value: "24",
+      icon: Users,
+      trend: { value: "2 new this month", positive: true },
+    },
+    {
+      title: "Occupied Rooms",
+      value: "456/500",
+      icon: Building2,
+      trend: { value: "91% occupancy", positive: true },
+    },
+    {
+      title: "Fee Collection",
+      value: "₹24.5L",
+      icon: DollarSign,
+      trend: { value: "8% pending", positive: false },
+    },
+  ];
+
+  const occupancyData = [
+    { month: "Jan", occupancy: 82 },
+    { month: "Feb", occupancy: 85 },
+    { month: "Mar", occupancy: 88 },
+    { month: "Apr", occupancy: 87 },
+    { month: "May", occupancy: 90 },
+    { month: "Jun", occupancy: 91 },
+  ];
+
+  const recentNotices = [
+    { id: 1, title: "Hostel Maintenance Schedule", date: "2 hours ago", priority: "high" },
+    { id: 2, title: "Fee Payment Deadline Extended", date: "5 hours ago", priority: "medium" },
+    { id: 3, title: "New Mess Menu Available", date: "1 day ago", priority: "low" },
+  ];
+
+  const pendingIssues = [
+    { id: 1, room: "A-201", issue: "AC Not Working", status: "Pending", warden: "John Doe" },
+    { id: 2, room: "B-105", issue: "Water Leakage", status: "In Progress", warden: "Jane Smith" },
+    { id: 3, room: "C-304", issue: "Door Lock Broken", status: "Pending", warden: "Mike Johnson" },
   ];
 
   return (
-    <div className="min-h-screen" style={{ background: 'var(--gradient-hero)' }}>
-      {/* Header */}
-      <nav className="navbar">
-        <div className="navbar-container">
-          <div className="navbar-content">
-            <h1 className="text-xl font-bold gradient-text">AutoStay System</h1>
-            <Button variant="outline" onClick={handleLogout} size="sm">
-              <LogOut className="w-4 h-4" />
-              Logout
-            </Button>
-          </div>
-        </div>
-      </nav>
+    <div className="space-y-6">
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <StatCard key={stat.title} {...stat} />
+        ))}
+      </div>
 
-      {/* Main Content */}
-      <div className="pt-24 px-4 sm:px-6 lg:px-8 pb-12">
-        <div className="max-w-6xl mx-auto">
-          {/* Welcome Section */}
-          <div className="bg-card rounded-2xl p-8 shadow-lg border border-border/50 mb-8">
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <Shield className="w-8 h-8 text-white" />
+      {/* Charts Row */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* Occupancy Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5" />
+              Hostel Occupancy Trends
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="h-[300px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={occupancyData}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
+                  <XAxis dataKey="month" className="text-xs" />
+                  <YAxis className="text-xs" />
+                  <Tooltip />
+                  <Area 
+                    type="monotone" 
+                    dataKey="occupancy" 
+                    stroke="hsl(var(--primary))" 
+                    fill="hsl(var(--primary))" 
+                    fillOpacity={0.2}
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Fee Collection Chart */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <DollarSign className="h-5 w-5" />
+              Fee Collection Status
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div>
+                <div className="mb-2 flex items-center justify-between text-sm">
+                  <span>Paid</span>
+                  <span className="font-medium">₹22.5L (92%)</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted">
+                  <div className="h-2 w-[92%] rounded-full bg-success" />
+                </div>
               </div>
               <div>
-                <h2 className="text-2xl font-bold">Welcome, Warden {user.name}!</h2>
-                <p className="text-muted-foreground">Department: {user.department}</p>
+                <div className="mb-2 flex items-center justify-between text-sm">
+                  <span>Pending</span>
+                  <span className="font-medium">₹2L (8%)</span>
+                </div>
+                <div className="h-2 rounded-full bg-muted">
+                  <div className="h-2 w-[8%] rounded-full bg-warning" />
+                </div>
               </div>
             </div>
-            <p className="text-muted-foreground">
-              Manage hostel operations and monitor student requests efficiently.
-            </p>
-          </div>
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
-              return (
-                <div
-                  key={index}
-                  className="bg-card rounded-2xl p-6 shadow-lg border border-border/50"
-                >
-                  <div className="flex items-center justify-between mb-4">
-                    <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${stat.color} flex items-center justify-center`}>
-                      <Icon className="w-6 h-6 text-white" />
-                    </div>
-                    <span className="text-3xl font-bold">{stat.value}</span>
+      {/* Tables Row */}
+      <div className="grid gap-4 lg:grid-cols-2">
+        {/* Recent Notices */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Recent Notices</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentNotices.map((notice) => (
+                <div key={notice.id} className="flex items-start justify-between border-b pb-3 last:border-0">
+                  <div>
+                    <p className="font-medium">{notice.title}</p>
+                    <p className="text-sm text-muted-foreground">{notice.date}</p>
                   </div>
-                  <p className="text-muted-foreground font-medium">{stat.label}</p>
+                  <Badge
+                    variant={
+                      notice.priority === "high"
+                        ? "destructive"
+                        : notice.priority === "medium"
+                        ? "default"
+                        : "secondary"
+                    }
+                  >
+                    {notice.priority}
+                  </Badge>
                 </div>
-              );
-            })}
-          </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-          {/* Recent Requests */}
-          <div className="bg-card rounded-2xl p-8 shadow-lg border border-border/50">
-            <h3 className="text-xl font-semibold mb-4">Recent Requests</h3>
-            <p className="text-muted-foreground">No pending requests at the moment.</p>
-          </div>
-        </div>
+        {/* Pending Maintenance Issues */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Pending Maintenance Issues</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {pendingIssues.map((issue) => (
+                <div key={issue.id} className="flex items-start justify-between border-b pb-3 last:border-0">
+                  <div>
+                    <p className="font-medium">
+                      {issue.room} - {issue.issue}
+                    </p>
+                    <p className="text-sm text-muted-foreground">Warden: {issue.warden}</p>
+                  </div>
+                  <Badge
+                    variant={issue.status === "Pending" ? "secondary" : "default"}
+                  >
+                    {issue.status}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
-};
-
-export default WardenDashboard;
+}

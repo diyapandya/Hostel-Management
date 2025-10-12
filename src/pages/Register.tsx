@@ -302,7 +302,7 @@ const Register = () => {
           </div>
 
           <div className="mt-4 text-center">
-            <Link to="/" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+            <Link to="./Index.tsx" className="text-sm text-muted-foreground hover:text-primary transition-colors">
               ← Back to Home
             </Link>
           </div>
