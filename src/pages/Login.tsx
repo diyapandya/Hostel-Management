@@ -34,9 +34,7 @@ const Login = () => {
 
   const handleInputChange = (field: keyof LoginForm, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
+    if (errors[field]) setErrors(prev => ({ ...prev, [field]: undefined }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -47,49 +45,53 @@ const Login = () => {
     try {
       const validatedData = loginSchema.parse(formData);
 
-      // Simulate login validation with localStorage
-      const storedUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const user = storedUsers.find(
-        (u: any) => u.email === validatedData.email && u.role === validatedData.role
-      );
+      // 🔹 Send POST request to backend
+      const response = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(validatedData),
+      });
 
-      if (!user || user.password !== validatedData.password) {
+      const data = await response.json();
+
+      if (!response.ok) {
         toast({
           variant: "destructive",
           title: "Login Failed",
-          description: "Invalid email or password. Please try again.",
+          description: data.message || "Invalid email or password",
         });
         setIsLoading(false);
         return;
       }
 
-      // Save login status
-      localStorage.setItem('currentUser', JSON.stringify(user));
+      // 🔹 Save token & user info (optional)
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('currentUser', JSON.stringify(data.user));
 
       toast({
         title: "Login Successful!",
-        description: `Welcome back, ${user.name || user.email}!`,
+        description: `Welcome back, ${data.user.name || data.user.email}!`,
       });
 
-    if (validatedData.role === "student") {
-  navigate("/student-dashboard"); // redirect to student dashboard
-} else if (validatedData.role === "warden") {
-  navigate("/warden-dashboard"); // warden dashboard page
-} else if (validatedData.role === "admin") {
-  navigate("/admin-dashboard"); // admin dashboard page
-}
+      // Redirect based on role
+      if (data.user.role === "student") navigate("/student-dashboard");
+      else if (data.user.role === "warden") navigate("/warden-dashboard");
+      else if (data.user.role === "admin") navigate("/admin-dashboard");
 
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors: Partial<Record<keyof LoginForm, string>> = {};
         error.errors.forEach(err => {
-          if (err.path[0]) {
-            fieldErrors[err.path[0] as keyof LoginForm] = err.message;
-          }
+          if (err.path[0]) fieldErrors[err.path[0] as keyof LoginForm] = err.message;
         });
         setErrors(fieldErrors);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Login Error",
+          description: "An unexpected error occurred",
+        });
       }
-      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
@@ -99,19 +101,18 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: 'var(--gradient-hero)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="hero-title text-3xl sm:text-4xl mb-3">
-            Welcome Back
-          </h1>
+          <h1 className="hero-title text-3xl sm:text-4xl mb-3">Welcome Back</h1>
           <p className="text-muted-foreground">Sign in to access your dashboard</p>
         </div>
 
         <div className="bg-card rounded-2xl p-8 shadow-lg border border-border/50">
           <form onSubmit={handleSubmit} className="space-y-6">
+
             {/* Role Selection */}
             <div className="space-y-3">
               <Label className="text-sm font-medium">Select Your Role</Label>
               <div className="grid grid-cols-3 gap-3">
-                {roles.map((role) => {
+                {roles.map(role => {
                   const Icon = role.icon;
                   return (
                     <button
@@ -143,7 +144,7 @@ const Login = () => {
                 type="email"
                 placeholder="your.email@example.com"
                 value={formData.email}
-                onChange={(e) => handleInputChange('email', e.target.value)}
+                onChange={e => handleInputChange('email', e.target.value)}
                 className={errors.email ? 'border-destructive' : ''}
               />
               {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
@@ -157,42 +158,23 @@ const Login = () => {
                 type="password"
                 placeholder="Enter your password"
                 value={formData.password}
-                onChange={(e) => handleInputChange('password', e.target.value)}
+                onChange={e => handleInputChange('password', e.target.value)}
                 className={errors.password ? 'border-destructive' : ''}
               />
               {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
             </div>
 
             {/* Submit Button */}
-            <Button 
-              type="submit" 
-              className="w-full btn-primary h-12"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                'Signing in...'
-              ) : (
-                <>
-                  <LogIn className="w-5 h-5" />
-                  Sign In
-                </>
-              )}
+            <Button type="submit" className="w-full btn-primary h-12" disabled={isLoading}>
+              {isLoading ? 'Signing in...' : (<><LogIn className="w-5 h-5" />Sign In</>)}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Don't have an account?{' '}
-              <Link to="/register" className="text-primary hover:underline font-medium">
-                Register here
-              </Link>
+              <Link to="/register" className="text-primary hover:underline font-medium">Register here</Link>
             </p>
-          </div>
-
-          <div className="mt-4 text-center">
-            <Link to="./Index.tsx" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-              ← Back to Home
-            </Link>
           </div>
         </div>
       </div>

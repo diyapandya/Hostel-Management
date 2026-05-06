@@ -66,14 +66,16 @@ const Register = () => {
   };
 
   const handleRoleChange = (role: 'student' | 'warden' | 'admin') => {
+    const roleFields: Partial<RegisterForm> = {
+      student: { roomNo: '' },
+      warden: { department: '' },
+      admin: { employeeId: '' },
+    }[role] || {};
+
     setFormData({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
+      ...formData,
       role,
-      ...(role === 'student' && { roomNo: '' }),
-      ...(role === 'warden' && { department: '' }),
-      ...(role === 'admin' && { employeeId: '' }),
+      ...roleFields,
     });
     setErrors({});
   };
@@ -85,7 +87,7 @@ const Register = () => {
 
     try {
       let validatedData;
-      
+
       switch (formData.role) {
         case 'student':
           validatedData = studentSchema.parse(formData);
@@ -98,31 +100,30 @@ const Register = () => {
           break;
       }
 
-      // Check if user already exists
-      const storedUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const existingUser = storedUsers.find(
-        (u: any) => u.email === validatedData.email && u.role === validatedData.role
-      );
-
-      if (existingUser) {
-        toast({
-          variant: "destructive",
-          title: "Registration Failed",
-          description: "An account with this email and role already exists.",
-        });
+      if (!validatedData) {
+        toast({ title: "Error", description: "Invalid role data", variant: "destructive" });
         setIsLoading(false);
         return;
       }
 
-      // Save user to localStorage
-      const newUser = {
-        ...validatedData,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-      };
-      
-      storedUsers.push(newUser);
-      localStorage.setItem('registeredUsers', JSON.stringify(storedUsers));
+      // Send POST request to backend
+      const response = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(validatedData),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: "Registration Failed",
+          description: data.message || "Something went wrong",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
 
       toast({
         title: "Registration Successful!",
@@ -142,6 +143,12 @@ const Register = () => {
           }
         });
         setErrors(fieldErrors);
+      } else {
+        toast({
+          title: "Error",
+          description: "An unexpected error occurred.",
+          variant: "destructive",
+        });
       }
       setIsLoading(false);
     }
@@ -151,9 +158,7 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center px-4 py-12" style={{ background: 'var(--gradient-hero)' }}>
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="hero-title text-3xl sm:text-4xl mb-3">
-            Create Account
-          </h1>
+          <h1 className="hero-title text-3xl sm:text-4xl mb-3">Create Account</h1>
           <p className="text-muted-foreground">Join AutoStay System today</p>
         </div>
 
@@ -170,6 +175,7 @@ const Register = () => {
                       key={role.value}
                       type="button"
                       onClick={() => handleRoleChange(role.value as any)}
+                      disabled={isLoading}
                       className={`relative flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300 ${
                         formData.role === role.value
                           ? 'border-primary bg-primary/5 shadow-sm'
@@ -281,23 +287,14 @@ const Register = () => {
               className="w-full btn-primary h-12"
               disabled={isLoading}
             >
-              {isLoading ? (
-                'Creating Account...'
-              ) : (
-                <>
-                  <UserPlus className="w-5 h-5" />
-                  Create Account
-                </>
-              )}
+              {isLoading ? 'Creating Account...' : (<><UserPlus className="w-5 h-5" />Create Account</>)}
             </Button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-sm text-muted-foreground">
               Already have an account?{' '}
-              <Link to="/login" className="text-primary hover:underline font-medium">
-                Sign in here
-              </Link>
+              <Link to="/login" className="text-primary hover:underline font-medium">Sign in here</Link>
             </p>
           </div>
 
